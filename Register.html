@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — VSXchange ZA</title>
+  <link rel="stylesheet" href="../src/css/auth.css">
+</head>
+<body class="auth-body">
+
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1 class="auth-title">Create Your Account</h1>
+
+      <form id="register-form" class="auth-form">
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="lastName" placeholder="Last Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Password" required>
+
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="farmer">Farmer</option>
+          <option value="skilled">Skilled Worker</option>
+          <option value="both">Farmer + Skilled</option>
+          <option value="client">Client</option>
+        </select>
+
+        <button type="submit">Register</button>
+      </form>
+
+      <p class="auth-footer">Already registered? 
+        <a href="login.html">Login here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="../src/js/auth.js"></script>
+</body>
+</html>
