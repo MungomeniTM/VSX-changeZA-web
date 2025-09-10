@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-grey text-textcolor font-sans;
+  font-family: 'Inter', sans-serif;
+}
