@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSXchange ZA - Connect & Collaborate</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../src/css/index.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- Header -->
+<header class="header fixed w-full z-50 bg-black shadow-lg">
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+        <div class="logo text-blue-500 font-bold text-2xl">VSXchange ZA</div>
+        <nav class="nav hidden md:flex space-x-6 text-white font-medium">
+            <a href="#home" class="hover:text-green-400 transition">Home</a>
+            <a href="#services" class="hover:text-green-400 transition">Services</a>
+            <a href="#explore" class="hover:text-green-400 transition">Explore</a>
+            <a href="#about" class="hover:text-green-400 transition">About</a>
+            <a href="#contact" class="hover:text-green-400 transition">Contact</a>
+        </nav>
+        <div class="auth-buttons hidden md:flex space-x-4">
+            <a href="login.html" class="border-2 border-blue-500 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-500 hover:text-white transition">Login</a>
+            <a href="register.html" class="bg-gradient-to-r from-blue-500 to-green-400 text-white px-4 py-2 rounded-lg hover:opacity-90 transition">Sign Up</a>
+        </div>
+        <button id="mobile-toggle" class="md:hidden flex flex-col justify-between w-7 h-5 focus:outline-none">
+            <span class="block h-0.5 w-full bg-white rounded"></span>
+            <span class="block h-0.5 w-full bg-white rounded"></span>
+            <span class="block h-0.5 w-full bg-white rounded"></span>
+        </button>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section id="home" class="hero min-h-screen flex flex-col justify-center items-center text-center text-white bg-gradient-to-r from-blue-600 to-green-500 px-6">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to VSXchange ZA</h1>
+    <p class="text-lg md:text-xl mb-6 max-w-3xl">
+        Empowering vocational skills and farming communities. Connect workers, creators, and farmers across Southern Africa for collaboration, opportunity, and impact.
+    </p>
+    <a href="register.html" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-400 rounded-3xl font-bold text-lg hover:opacity-90 transition">Join the Movement</a>
+</section>
+
+<!-- Services -->
+<section id="services" class="py-24 bg-gray-50 text-center">
+    <div class="container mx-auto max-w-3xl">
+        <h2 class="text-3xl font-bold text-black mb-6">Our Services</h2>
+        <p class="text-gray-700 mb-6">Connecting skilled workers, farmers, and communities. Data analytics for farm types, skills, and productivity. Empowerment through collaboration.</p>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+                <h3 class="font-semibold text-lg mb-2">Skill Discovery</h3>
+                <p class="text-gray-600 text-sm">Find skilled workers and farmers in your area using location-based search.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+                <h3 class="font-semibold text-lg mb-2">Collaboration 🤝</h3>
+                <p class="text-gray-600 text-sm">Work together on projects, farms, and businesses efficiently.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow hover:shadow-lg transition">
+                <h3 class="font-semibold text-lg mb-2">Analytics Dashboard</h3>
+                <p class="text-gray-600 text-sm">Track farm productivity, skill demand, and community growth in real-time.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Explore -->
+<section id="explore" class="py-24 text-center">
+    <div class="container mx-auto max-w-3xl">
+        <h2 class="text-3xl font-bold text-black mb-6">Explore Skills & Farms</h2>
+        <p class="text-gray-700 mb-6">Search for vocational experts or farmers, filter by location, skill, or farm type, and collaborate instantly.</p>
+        <a href="explore.html" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-400 rounded-3xl font-bold text-lg hover:opacity-90 transition">Start Exploring</a>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about" class="py-24 bg-gray-50 text-center">
+    <div class="container mx-auto max-w-3xl">
+        <h2 class="text-3xl font-bold text-black mb-6">About VSXchange ZA</h2>
+        <p class="text-gray-700">VSXchange ZA connects people, skills, and farms across Southern Africa. We provide tools for collaboration, data-driven decisions, and opportunities for communities to grow and thrive.</p>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-24 text-center">
+    <div class="container mx-auto max-w-3xl">
+        <h2 class="text-3xl font-bold text-black mb-6">Contact Us</h2>
+        <p class="text-gray-700 mb-6">Have questions? Reach out to us via email at <a href="mailto:contact@vsxchangeza.com" class="text-blue-500 hover:underline">contact@vsxchangeza.com</a></p>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-black text-white text-center py-6">
+    <p>&copy; 2025 VSXchange ZA. All Rights Reserved.</p>
+</footer>
+
+<script src="../src/js/index.js"></script>
+</body>
+</html>
