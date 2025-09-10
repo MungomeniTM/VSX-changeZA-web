@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register — VSXchangeZA</title>
+  <link rel="stylesheet" href="../src/css/auth.css" />
+</head>
+<body>
+  <div class="page-auth">
+    <div class="auth-outer">
+      <div class="auth-card">
+        <h1 class="auth-heading">Create <span class="brand">Account</span></h1>
+        <p class="auth-sub">Join VSXchangeZA to connect farmers & skilled professionals across Africa.</p>
+
+        <form id="register-form" class="form">
+          <div class="form-grid">
+            <div class="field">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" required />
+              <div class="field-error" id="firstName-error"></div>
+            </div>
+
+            <div class="field">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" required />
+              <div class="field-error" id="lastName-error"></div>
+            </div>
+
+            <div class="field full">
+              <label for="email">Email</label>
+              <input type="email" id="email" required />
+              <div class="field-error" id="email-error"></div>
+            </div>
+
+            <div class="field full">
+              <label for="role">I am a</label>
+              <select id="role" required>
+                <option value="">Select</option>
+                <option value="farmer">Farmer</option>
+                <option value="skilled">Skilled Vocational Person</option>
+                <option value="client">Client</option>
+              </select>
+              <div class="field-error" id="role-error"></div>
+            </div>
+
+            <div class="field full pw-wrap">
+              <label for="password">Password</label>
+              <input type="password" id="password" required />
+              <button type="button" class="pw-toggle" id="togglePassword"></button>
+              <div class="field-error" id="password-error"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="register-btn" class="btn btn-primary">
+              <span class="btn-label">Register</span>
+              <span class="btn-spinner"></span>
+            </button>
+          </div>
+        </form>
+
+        <p class="small muted">Already have an account? <a class="link" href="login.html">Login</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../src/js/auth.js"></script>
+</body>
+</html>
