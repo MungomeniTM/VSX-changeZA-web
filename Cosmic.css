@@ -1,0 +1,28 @@
+/* Cosmic particle glow & ambient effects */
+.particle-glow {
+  box-shadow: 0 0 6px 2px var(--mint);
+  border-radius: 50%;
+}
+
+.post-card, .card, .chip, .btn.primary, .fab {
+  transition: all 0.3s cubic-bezier(.22,.61,.36,1);
+}
+
+.post-card:hover, .card:hover, .chip:hover, .btn.primary:hover, .fab:hover {
+  box-shadow: 0 0 20px 3px var(--blue), 0 0 35px 6px var(--mint), 0 0 50px 10px var(--green);
+}
+
+textarea:focus, input:focus, .search input:focus {
+  box-shadow: 0 0 10px var(--mint);
+}
+
+/* Ambient glowing gradient animation */
+@keyframes ambientGlow {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(60deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+body {
+  animation: ambientGlow 45s infinite linear;
+}
