@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VSXchangeZA — Dashboard</title>
+  <meta name="color-scheme" content="dark light" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./dashboard.css" />
+</head>
+<body>
+  <header class="appbar" role="banner">
+    <div class="appbar-row container">
+      <button id="hamburger" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <a class="brand" href="./index.html" aria-label="VSXchangeZA home">VSXchangeZA</a>
+
+      <form id="searchForm" class="search" role="search" onsubmit="return false;" autocomplete="off">
+        <input id="globalSearch" name="q" type="search" placeholder="Search skills, people, farms…" aria-label="Search the network" />
+        <button id="searchBtn" type="button" aria-label="Search">⌕</button>
+        <ul id="searchResults" class="search-results" role="listbox" aria-hidden="true"></ul>
+      </form>
+
+      <nav class="topnav" aria-label="Primary">
+        <a href="./dashboard.html" class="active">Home</a>
+        <a href="./messages.html">Messages</a>
+        <a href="./explore.html">Explore</a>
+        <a href="./profile.html" id="profileLink">Profile</a>
+        <a href="./settings.html">Settings</a>
+        <button id="toggleTheme" class="btn ghost" title="Toggle theme" aria-pressed="false">🌗</button>
+        <button id="logout" class="btn ghost" title="Logout">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container layout" id="main">
+    <aside id="sidebar" class="sidebar" aria-label="User panel">
+      <div class="usercard card" role="region" aria-label="Account summary">
+        <div class="avatar" id="avatar">👤</div>
+        <div class="user-meta">
+          <p class="hello">Welcome, <strong id="userName">User</strong></p>
+          <p id="userRole" class="muted">Role • Location</p>
+        </div>
+        <button id="createPostSidebar" class="btn primary full">+ Create Post</button>
+      </div>
+
+      <nav class="sidelinks" aria-label="Sidebar links">
+        <a href="#" class="link">My Skills</a>
+        <a href="#" class="link">My Listings</a>
+        <a href="#" class="link">Exchange Requests</a>
+      </nav>
+
+      <section class="quick card" aria-label="Quick actions">
+        <h4>Quick Actions</h4>
+        <div class="chips">
+          <button class="chip" id="chipCollaborate">Collaborate 🤝</button>
+          <button class="chip">Hire</button>
+          <button class="chip">Post Job</button>
+          <button class="chip" id="chipVerify">Get Verified</button>
+        </div>
+      </section>
+
+      <section class="card stat-card" aria-label="Community metrics">
+        <h4>Community Metrics</h4>
+        <div class="stats">
+          <div class="stat"><strong id="statUsers">—</strong><span>Users</span></div>
+          <div class="stat"><strong id="statPosts">—</strong><span>Posts</span></div>
+          <div class="stat"><strong id="statFarms">—</strong><span>Farms</span></div>
+        </div>
+      </section>
+    </aside>
+
+    <section class="feedcol" aria-label="Main feed">
+      <article class="card composer" aria-labelledby="composeTitle">
+        <h2 id="composeTitle" class="sr">Create a post</h2>
+        <div class="composer-row">
+          <div class="avatar small" aria-hidden="true">👤</div>
+          <textarea id="composeText" rows="3" placeholder="Share your work, project, or insight…" aria-label="Create a post"></textarea>
+        </div>
+
+        <div class="composer-actions">
+          <label class="file">
+            <input id="composeFile" type="file" accept="image/*,video/*" aria-label="Attach media"/>
+            <span class="file-btn" id="fileBtn" role="button" tabindex="0">Choose file</span>
+            <span id="fileName" class="file-name">No file chosen</span>
+          </label>
+
+          <div class="right">
+            <button id="previewBtn" class="btn ghost" type="button">Preview</button>
+            <button id="postBtn" class="btn primary" type="button">Post</button>
+          </div>
+        </div>
+
+        <div id="preview" class="preview" hidden>
+          <figure id="previewMedia" class="media" aria-hidden="false"></figure>
+        </div>
+      </article>
+
+      <div id="feed" class="stack" aria-live="polite"></div>
+      <div id="loader" class="muted hidden" role="status" aria-live="polite">Loading more posts…</div>
+    </section>
+
+    <aside class="rightcol" aria-label="Highlights">
+      <section class="card tight" aria-label="Trending skills">
+        <h3>Trending Skills</h3>
+        <ul id="trendingList" class="list"></ul>
+      </section>
+
+      <section class="card tight" aria-label="Nearby Projects">
+        <h3>Nearby Projects</h3>
+        <ul id="nearbyList" class="list">
+          <li class="muted">Enable location to see projects around you.</li>
+        </ul>
+        <button id="enableGeo" class="btn ghost full" type="button">Use my location</button>
+      </section>
+
+      <section class="card tight" aria-label="Data analytics preview">
+        <h3>Data Analytics Preview</h3>
+        <canvas id="skillsChart" aria-label="Skill demand chart" role="img"></canvas>
+        <canvas id="farmChart" aria-label="Farm yield chart" role="img" style="margin-top:12px;"></canvas>
+
+        <div id="analyticsSummary" class="analytics-summary" style="margin-top:12px;">
+          <svg id="sparkline" viewBox="0 0 200 40" preserveAspectRatio="none" class="spark" aria-hidden="true"></svg>
+          <div class="kpis" style="margin-left:12px;">
+            <div class="kpi"><strong id="kpi1">—</strong><small>Skill demand</small></div>
+            <div class="kpi"><strong id="kpi2">—</strong><small>Farm growth</small></div>
+            <div class="kpi"><strong id="kpi3">—</strong><small>Avg approvals</small></div>
+          </div>
+        </div>
+
+        <p class="muted small" style="margin-top:10px;">📊 Live analytics to empower Africa’s skills & farms — data-driven decisions for communities.</p>
+      </section>
+    </aside>
+  </main>
+
+  <button id="fab" class="fab" aria-label="Create Post">＋</button>
+
+  <!-- Chart.js CDN (global Chart) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- local helpers (no 404) -->
+  <script src="./api.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./helpers.js"></script>
+  <script src="./dashboard.js" type="module"></script>
+</body>
+</html>
