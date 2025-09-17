@@ -1,22 +1,27 @@
 /* ============================
    VSXchangeZA Auth Pages
-   Cosmic Alien Edition 👽🚀
+   Alien-Level CSS 👽🚀
    ============================ */
 
-.auth-body {
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+body, html {
+  height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at 30% 30%, #0a0f1a, #000000 85%);
+  color: #f5f5f5;
+  overflow-x: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: radial-gradient(circle at 20% 20%, #0a0f1a, #000000 80%);
-  color: #f5f5f5;
-  overflow: hidden;
 }
 
 /* Subtle animated background glow */
-.auth-body::before {
+body::before {
   content: "";
   position: absolute;
   width: 200%;
@@ -29,7 +34,7 @@
     rgba(0, 200, 255, 0.05),
     rgba(0, 255, 170, 0.1)
   );
-  animation: spin 20s linear infinite;
+  animation: spin 25s linear infinite;
   z-index: 0;
 }
 
@@ -38,22 +43,24 @@
 }
 
 .auth-container {
+  position: relative;
+  z-index: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   width: 100%;
-  z-index: 1;
+  max-width: 420px;
+  padding: 2rem;
 }
 
 .auth-card {
-  background: rgba(20, 20, 30, 0.9);
-  padding: 3rem;
-  border-radius: 20px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 0 35px rgba(0, 255, 180, 0.4);
+  background: rgba(20, 20, 30, 0.95);
+  padding: 3rem;
+  border-radius: 22px;
+  box-shadow: 0 0 40px rgba(0, 255, 180, 0.5);
   text-align: center;
-  backdrop-filter: blur(25px) saturate(160%);
+  backdrop-filter: blur(25px) saturate(180%);
   border: 1px solid rgba(0, 255, 200, 0.2);
   animation: floatUp 1.2s ease-out;
 }
@@ -65,12 +72,12 @@
 
 .auth-title {
   font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
   margin-bottom: 2rem;
   background: linear-gradient(90deg, #00ffaa, #00ccff, #00ffaa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  letter-spacing: 1px;
   text-shadow: 0 0 12px rgba(0, 255, 200, 0.3);
 }
 
@@ -92,23 +99,22 @@ form input:focus,
 form select:focus {
   outline: none;
   background: #26262f;
-  box-shadow: 0 0 10px #00ffaa;
+  box-shadow: 0 0 12px #00ffaa;
 }
 
-/* Futuristic button */
 .auth-btn {
-  margin-top: 1rem;
   width: 100%;
   padding: 14px;
+  margin-top: 1rem;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(90deg, #00ffaa, #00ccff);
-  color: #000;
   font-size: 1.15rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.4s ease-in-out;
   letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #00ffaa, #00ccff);
+  color: #000;
+  transition: all 0.4s ease-in-out;
 }
 
 .auth-btn:hover {
@@ -117,7 +123,6 @@ form select:focus {
   box-shadow: 0 0 25px #00ffaa;
 }
 
-/* Switch text */
 .auth-switch {
   margin-top: 1.2rem;
   font-size: 0.95rem;
@@ -193,4 +198,23 @@ form select:focus {
 .strength-unbreakable {
   background: #00dfff;
   box-shadow: 0 0 12px #00dfff;
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem;
+  }
+  .auth-title {
+    font-size: 1.6rem;
+  }
+  form input,
+  form select {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+  .auth-btn {
+    font-size: 1rem;
+    padding: 12px;
+  }
 }
