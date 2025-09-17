@@ -1,40 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register | VSXchangeZA</title>
-  <link rel="stylesheet" href="../src/css/auth.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — VSXchangeZA</title>
+  <link rel="stylesheet" href="../src/css/auth.css" />
 </head>
-<body class="auth-body">
+<body>
   <div class="auth-container">
-    <div class="auth-card">
-      <h1 class="auth-title">Create your VSXchangeZA Account</h1>
-      <form id="registerForm">
-        <input type="text" id="name" placeholder="Full Name" required>
-        <input type="email" id="email" placeholder="Email Address" required>
+    <h1>Join VSXchangeZA</h1>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="client">Client</option>
+        <option value="farmer">Farmer</option>
+        <option value="skilled">Skilled Person</option>
+      </select>
 
-        <!-- Password with strength meter -->
-        <div class="password-group">
-          <input type="password" id="password" placeholder="Password" required>
-          <div id="passwordStrength" class="password-strength">
-            <div class="strength-bar"></div>
-            <div class="strength-bar"></div>
-            <div class="strength-bar"></div>
-            <div class="strength-bar"></div>
-          </div>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="password-group">
-          <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-          <span id="passwordMatch" class="password-match"></span>
-        </div>
-
-        <button type="submit" class="auth-btn">Register</button>
-      </form>
-      <p class="auth-switch">Already have an account? <a href="login.html">Login</a></p>
-    </div>
+      <button type="submit">Register</button>
+    </form>
+    <p class="auth-switch">Already a client? <a href="login.html">Login</a></p>
   </div>
   <script src="../src/js/auth.js"></script>
 </body>
