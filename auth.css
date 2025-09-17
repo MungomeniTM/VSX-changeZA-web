@@ -1,3 +1,8 @@
+/* ============================
+   VSXchangeZA Auth Pages
+   Cosmic Alien Edition 👽🚀
+   ============================ */
+
 .auth-body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5,8 +10,31 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #000000, #0a0f1a, #101820);
+  background: radial-gradient(circle at 20% 20%, #0a0f1a, #000000 80%);
   color: #f5f5f5;
+  overflow: hidden;
+}
+
+/* Subtle animated background glow */
+.auth-body::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 255, 170, 0.1),
+    rgba(0, 200, 255, 0.05),
+    rgba(0, 255, 170, 0.1)
+  );
+  animation: spin 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
 }
 
 .auth-container {
@@ -14,76 +42,99 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  z-index: 1;
 }
 
 .auth-card {
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(20, 20, 30, 0.9);
   padding: 3rem;
-  border-radius: 18px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 0 25px rgba(0, 255, 180, 0.4);
+  max-width: 420px;
+  box-shadow: 0 0 35px rgba(0, 255, 180, 0.4);
   text-align: center;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(25px) saturate(160%);
+  border: 1px solid rgba(0, 255, 200, 0.2);
+  animation: floatUp 1.2s ease-out;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .auth-title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 2rem;
   background: linear-gradient(90deg, #00ffaa, #00ccff, #00ffaa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(0, 255, 200, 0.3);
 }
 
-form input {
+form input,
+form select {
   width: 100%;
   padding: 14px;
-  margin: 10px 0;
+  margin: 12px 0;
   border: none;
-  border-radius: 10px;
-  background: #1b1b1b;
+  border-radius: 12px;
+  background: #1b1b1f;
   color: #fff;
   font-size: 1rem;
   transition: all 0.3s ease-in-out;
+  box-shadow: inset 0 0 5px rgba(0, 255, 200, 0.1);
 }
 
-form input:focus {
+form input:focus,
+form select:focus {
   outline: none;
-  background: #2a2a2a;
-  box-shadow: 0 0 8px #00ffaa;
+  background: #26262f;
+  box-shadow: 0 0 10px #00ffaa;
 }
 
+/* Futuristic button */
 .auth-btn {
   margin-top: 1rem;
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(90deg, #00ffaa, #00ccff);
   color: #000;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.4s ease-in-out;
+  letter-spacing: 0.5px;
 }
 
 .auth-btn:hover {
   background: linear-gradient(90deg, #00ccff, #00ffaa);
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #00ffaa;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 25px #00ffaa;
 }
 
+/* Switch text */
 .auth-switch {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 1.2rem;
+  font-size: 0.95rem;
+  color: #bbb;
 }
 
 .auth-switch a {
   color: #00ffaa;
   text-decoration: none;
   font-weight: bold;
+  transition: color 0.3s;
 }
+
+.auth-switch a:hover {
+  color: #00ccff;
+}
+
 /* Password confirmation glow */
 .password-group {
   position: relative;
@@ -92,7 +143,7 @@ form input:focus {
 
 .password-match {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.2rem;
@@ -100,12 +151,12 @@ form input:focus {
 }
 
 .password-match.success {
-  color: #00ff88; /* neon green */
+  color: #00ff88;
   text-shadow: 0 0 8px #00ff88;
 }
 
 .password-match.error {
-  color: #ff3355; /* neon red */
+  color: #ff3355;
   text-shadow: 0 0 8px #ff3355;
 }
 
@@ -119,7 +170,7 @@ form input:focus {
 .strength-bar {
   flex: 1;
   height: 6px;
-  background: #333; /* base dark bar */
+  background: #333;
   border-radius: 4px;
   transition: all 0.3s ease;
 }
