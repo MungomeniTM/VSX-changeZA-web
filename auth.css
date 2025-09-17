@@ -84,3 +84,62 @@ form input:focus {
   text-decoration: none;
   font-weight: bold;
 }
+/* Password confirmation glow */
+.password-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.password-match {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+.password-match.success {
+  color: #00ff88; /* neon green */
+  text-shadow: 0 0 8px #00ff88;
+}
+
+.password-match.error {
+  color: #ff3355; /* neon red */
+  text-shadow: 0 0 8px #ff3355;
+}
+
+/* Password strength meter */
+.password-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: #333; /* base dark bar */
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.strength-weak {
+  background: #ff3355;
+  box-shadow: 0 0 8px #ff3355;
+}
+
+.strength-medium {
+  background: #ffcc00;
+  box-shadow: 0 0 8px #ffcc00;
+}
+
+.strength-strong {
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+}
+
+.strength-unbreakable {
+  background: #00dfff;
+  box-shadow: 0 0 12px #00dfff;
+}
