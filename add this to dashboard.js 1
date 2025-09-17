@@ -1,0 +1,28 @@
+const authUser = auth.getUser();
+
+// Redirect to login if not logged in
+if (!auth.getToken() || !authUser.email) {
+  window.location.href = "login.html";
+}
+
+// Cosmic role-based greeting
+const userNameEl = document.getElementById("userName");
+const userRoleEl = document.getElementById("userRole");
+
+if (authUser) {
+  userNameEl.textContent = authUser.name || `${authUser.firstName || 'User'}`;
+  userRoleEl.textContent = `${authUser.role || '—'} • ${authUser.location || '—'}`;
+}
+window.API = {
+  request: async (path, opts = {}) => {
+    opts.headers = opts.headers || {};
+    const token = auth.getToken();
+    if (token) opts.headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`${API_URL}${path}`, opts);
+    return res;
+  },
+  json: async (path, opts = {}) => {
+    const res = await window.API.request(path, opts);
+    return res.ok ? res.json() : null;
+  }
+};
