@@ -1,5 +1,11 @@
-const API_URL = "http://localhost:8000";
+// ===========================
+// API BASE URL
+// ===========================
+const API_URL = "http://127.0.0.1:8000";  // changed from localhost to 127.0.0.1
 
+// ===========================
+// AUTH UTILITIES
+// ===========================
 window.auth = {
   getToken: () => localStorage.getItem("token"),
   getUser: () => JSON.parse(localStorage.getItem("user") || "{}"),
@@ -10,6 +16,9 @@ window.auth = {
   }
 };
 
+// ===========================
+// EVENT LISTENERS
+// ===========================
 document.addEventListener("DOMContentLoaded", () => {
   // ---------------------------
   // REGISTER
@@ -36,12 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await res.json();
         if (res.ok) {
           alert("Registration successful! Redirecting to login…");
-          window.location.href = "login.html";
+          console.log("✅ Registered successfully, redirecting now...");
+          window.location.href = "login.html"; // redirect
         } else {
+          console.error("❌ Registration failed:", data);
           alert(`Registration failed: ${data.detail || "Unknown error"}`);
         }
       } catch (err) {
-        console.error("Register error:", err);
+        console.error("⚠️ Register error:", err);
         alert("Server error: Unable to reach API");
       }
     });
@@ -67,14 +78,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
+          console.log("✅ Login successful, redirecting to dashboard...");
           window.location.href = "dashboard.html";
         } else if (res.status === 401) {
+          console.warn("⚠️ Invalid credentials");
           alert("Invalid email or password");
         } else {
+          console.error("❌ Login failed:", data);
           alert(`Login failed: ${data.detail || "Unknown error"}`);
         }
       } catch (err) {
-        console.error("Login error:", err);
+        console.error("⚠️ Login error:", err);
         alert("Server error: Unable to reach API");
       }
     });
