@@ -18,19 +18,19 @@ app = FastAPI(
 )
 
 # ---------------------------
-# CORS (allow frontend)
+# CORS: Allow frontend on Live Server
 # ---------------------------
 origins = [
-    "http://127.0.0.1:5500",  # frontend server
+    "http://127.0.0.1:5500",
     "http://localhost:5500"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,           # Explicitly allow your frontend
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],             # GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],             # All headers
 )
 
 # ---------------------------
