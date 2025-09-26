@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile — VSXchangeZA</title>
+  <meta name="color-scheme" content="dark light" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./profile.css" />
+</head>
+<body>
+  <header class="appbar" role="banner">
+    <div class="appbar-row container">
+      <a class="brand" href="./dashboard.html">VSXchangeZA</a>
+      <div style="flex:1"></div>
+      <button id="logout" class="btn ghost">Logout</button>
+    </div>
+  </header>
+
+  <main class="container profile-layout">
+    <section class="left card profile-card" aria-label="Profile summary">
+      <div class="avatar-large" id="avatarPreview">👤</div>
+      <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+      <button id="uploadAvatarBtn" class="btn ghost">Upload avatar</button>
+
+      <h2 id="displayName">User</h2>
+      <p id="displayRole" class="muted">Role</p>
+      <p id="displayLocation" class="muted">Location</p>
+
+      <div class="stats small">
+        <div><strong id="countPosts">—</strong><span>Posts</span></div>
+        <div><strong id="countApprovals">—</strong><span>Approvals</span></div>
+        <div><strong id="countConnections">—</strong><span>Connections</span></div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button id="editProfileBtn" class="btn primary full">Edit profile</button>
+      </div>
+    </section>
+
+    <section class="center card" aria-label="Profile editor & portfolio">
+      <h3>Profile</h3>
+
+      <form id="profileForm">
+        <div class="row"><label>First name</label><input id="firstName" /></div>
+        <div class="row"><label>Last name</label><input id="lastName" /></div>
+        <div class="row"><label>Location</label><input id="location" /></div>
+        <div class="row"><label>Role</label>
+          <select id="role">
+            <option value="client">Client</option>
+            <option value="farmer">Farmer</option>
+            <option value="skilled">Skilled</option>
+          </select>
+        </div>
+        <div class="row"><label>Bio</label><textarea id="bio" rows="4" placeholder="Describe yourself, your work, what you offer..."></textarea></div>
+
+        <div class="row">
+          <label>Skills (comma-separated)</label>
+          <input id="skills" placeholder="e.g. plumbing, irrigation, welding" />
+        </div>
+
+        <div class="actions" style="margin-top:10px;">
+          <button id="saveProfile" class="btn primary" type="button">Save profile</button>
+          <button id="cancelEdit" class="btn ghost" type="button">Cancel</button>
+        </div>
+      </form>
+
+      <hr style="margin:16px 0" />
+
+      <h3>Portfolio</h3>
+      <form id="portfolioForm" enctype="multipart/form-data">
+        <div class="row"><label>Title</label><input id="pfTitle" required /></div>
+        <div class="row"><label>Description</label><input id="pfDesc" /></div>
+        <div class="row">
+          <label>Media</label>
+          <input id="pfFile" type="file" accept="image/*,video/*" />
+        </div>
+        <div class="actions">
+          <button id="addPortfolio" class="btn primary" type="button">Add to portfolio</button>
+        </div>
+      </form>
+
+      <div id="portfolioList" class="portfolio-list" aria-live="polite"></div>
+    </section>
+
+    <aside class="right card" aria-label="Activity & analytics">
+      <h4>Analytics Snapshot</h4>
+      <div class="kpis">
+        <div class="kpi"><strong id="kpiPosts">—</strong><small>Posts</small></div>
+        <div class="kpi"><strong id="kpiApprovals">—</strong><small>Approvals</small></div>
+        <div class="kpi"><strong id="kpiReach">—</strong><small>Reach</small></div>
+      </div>
+
+      <h4 style="margin-top:12px">Recent Activity</h4>
+      <div id="recentActivity" class="muted small">No activity yet.</div>
+    </aside>
+  </main>
+
+  <script src="./api.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./helpers.js"></script>
+  <script src="./profile.js" type="module"></script>
+</body>
+</html>
