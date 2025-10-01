@@ -6,12 +6,10 @@
   <title>Profile — VSXchangeZA</title>
   <meta name="color-scheme" content="dark light" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Dashboard core styles + profile tweaks -->
   <link rel="stylesheet" href="./dashboard.css" />
   <link rel="stylesheet" href="./profile.css" />
 </head>
 <body>
-  <!-- appbar kept identical to dashboard for consistency -->
   <header class="appbar" role="banner">
     <div class="appbar-row container">
       <a class="brand" href="./index.html" aria-label="VSXchangeZA home">VSXchangeZA</a>
@@ -26,7 +24,7 @@
   </header>
 
   <main class="container profile-layout" id="main">
-    <!-- left: profile card -->
+    <!-- left -->
     <section class="card profile-card" id="profileCard" aria-label="Profile">
       <div class="profile-hero">
         <div class="avatar big" id="pAvatar">👤</div>
@@ -46,11 +44,21 @@
       <div class="profile-actions">
         <button id="editProfile" class="btn primary">Edit profile</button>
         <button id="msgProfile" class="btn ghost">Message</button>
-        <button id="callProfile" class="btn ghost">Call</button>
+        <button id="callProfile" class="btn ghost">Contact</button>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <h4>Photos of work</h4>
+        <div id="photosGallery" class="gallery muted">No photos yet</div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <h4>Companies & Websites</h4>
+        <div id="companiesList" class="companies muted">No websites yet</div>
       </div>
     </section>
 
-    <!-- center: editable form -->
+    <!-- center: edit form -->
     <section class="card profile-form" aria-label="Edit profile">
       <h2>Profile & Portfolio</h2>
       <form id="profileForm" novalidate>
@@ -102,12 +110,32 @@
         </div>
 
         <div class="row">
-          <label>Portfolio (paste image/video URL or external link)
+          <label>Portfolio (links)
             <div id="portfolioList" class="portfolio-list"></div>
             <div class="portfolio-add">
-              <input id="portfolioUrl" placeholder="https://example.com/image.jpg or video link" />
+              <input id="portfolioUrl" placeholder="https://your-site-or-file" />
               <button id="addPortfolio" class="btn ghost" type="button">Add</button>
             </div>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Photos (drag & drop or click)
+            <div id="dropzone" class="dropzone">
+              <input id="fileInput" type="file" accept="image/*,video/*" multiple hidden />
+              <div class="dz-instructions">Drop images here or <button id="chooseFiles" class="btn ghost" type="button">Choose files</button></div>
+              <div id="dzPreview" class="dz-preview"></div>
+            </div>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Companies / Websites
+            <div id="companiesInput" class="companies-input">
+              <input id="companyUrl" placeholder="https://company-or-farm-site.com" />
+              <button id="addCompany" class="btn ghost" type="button">Add</button>
+            </div>
+            <div id="companiesAdded" class="companies-list"></div>
           </label>
         </div>
 
@@ -125,7 +153,7 @@
       </form>
     </section>
 
-    <!-- right: analytics & searchability -->
+    <!-- right -->
     <aside class="card profile-right" aria-label="Profile highlights">
       <h3>Search & Visibility</h3>
       <p class="muted small">Set your location and skills to be discoverable on Explore and nearby searches.</p>
@@ -142,6 +170,14 @@
       <div id="portfolioPreview" class="portfolio-preview muted">No items yet</div>
     </aside>
   </main>
+
+  <!-- modal preview -->
+  <div id="mediaModal" class="media-modal hidden" role="dialog" aria-hidden="true">
+    <div class="media-modal-inner">
+      <button id="closeModal" class="btn ghost">Close</button>
+      <div id="mediaViewer"></div>
+    </div>
+  </div>
 
   <script src="./api.js"></script>
   <script src="./auth.js"></script>
