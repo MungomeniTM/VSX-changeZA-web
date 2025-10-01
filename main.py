@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import auth
-from app.core.config import Base, engine
+from fastapi.staticfiles import StaticFiles  # ✅ must be imported at the top
+
+from app.routes import auth, uploads  # ✅ add users.py later once stable
+from app.core.config import Base, engine, API_PREFIX, UPLOAD_DIR
 
 # ---------------------------
-# Create DB tables (cosmic precision)
+# Create DB tables
 # ---------------------------
 Base.metadata.create_all(bind=engine)
 
@@ -18,7 +20,7 @@ app = FastAPI(
 )
 
 # ---------------------------
-# CORS setup for frontend (no mistakes)
+# CORS setup for frontend
 # ---------------------------
 origins = [
     "http://127.0.0.1:5500",  # VSCode Live Server
@@ -36,7 +38,14 @@ app.add_middleware(
 # ---------------------------
 # Include routes
 # ---------------------------
-app.include_router(auth.router)
+app.include_router(auth.router, prefix=API_PREFIX)
+app.include_router(uploads.router, prefix=API_PREFIX)
+# app.include_router(users.router, prefix=API_PREFIX)  # add when users route is ready
+
+# ---------------------------
+# Serve static uploads (profile photos, portfolios, etc.)
+# ---------------------------
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # ---------------------------
 # Root endpoint
@@ -44,15 +53,3 @@ app.include_router(auth.router)
 @app.get("/")
 def root():
     return {"message": "VSXchangeZA API is running smoothly 🚀"}
-    from fastapi.staticfiles import StaticFiles
-from app.routes import auth, users, uploads
-from app.core.config import API_PREFIX, UPLOAD_DIR
-
-app.include_router(auth.router, prefix=API_PREFIX)
-app.include_router(users.router, prefix=API_PREFIX)
-app.include_router(uploads.router, prefix=API_PREFIX)
-
-# serve static uploads at /uploads
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-    
-    
