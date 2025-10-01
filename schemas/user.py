@@ -17,5 +17,3 @@ class UserResponse(UserBase):
 
     class Config:
         orm_mode = True
-if payload.photos is not None: update_values['photos'] = json.dumps(payload.photos)
-if payload.companies is not None: update_values['companies'] = json.dumps(payload.companies)
