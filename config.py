@@ -22,3 +22,14 @@ def get_db():
         yield db
     finally:
         db.close()
+        
+# app/core/config.py
+from datetime import timedelta
+API_PREFIX = "/api"
+JWT_SECRET = "dev-secret-change-me"  # change in production
+JWT_ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+DATABASE_URL = "sqlite:///./vsxchange.db"
+
+# uploads
+UPLOAD_DIR = "./uploads"
