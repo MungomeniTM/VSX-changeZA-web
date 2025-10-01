@@ -13,9 +13,5 @@ class User(Base):
 from app.routes import auth, users, uploads
 from app.core.config import API_PREFIX, UPLOAD_DIR
 
-app.include_router(auth.router, prefix=API_PREFIX)
-app.include_router(users.router, prefix=API_PREFIX)
-app.include_router(uploads.router, prefix=API_PREFIX)
-
-# serve static uploads at /uploads
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+if payload.photos is not None: update_values['photos'] = json.dumps(payload.photos)
+if payload.companies is not None: update_values['companies'] = json.dumps(payload.companies)
