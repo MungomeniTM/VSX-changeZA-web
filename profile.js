@@ -1,168 +1,292 @@
-// profile.js (module)
-// Designed to integrate with your window.API, window.auth, and window.helpers
-
+// profile.js — full profile UI & upload wiring
 const $ = id => document.getElementById(id);
+const create = (tag, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
 const API = window.API;
 const auth = window.auth;
-const H = window.helpers;
 
-async function safeJson(path, opts = {}) {
-  try {
-    const res = await API.request(path, opts);
-    if (res.status === 401) { auth.logout(); throw new Error('unauthorized'); }
-    return res.json();
-  } catch (err) {
-    console.warn('API error', err);
-    throw err;
-  }
-}
+// state
+let state = { skills: [], portfolio: [], photos: [], companies: [], discoverable: true, userId: null };
 
-async function loadMyProfile() {
-  try {
-    // /api/profile/me returns extended profile
-    const profile = await safeJson('/profile/me', { method: 'GET' });
-    // populate summary
-    $('displayName').textContent = `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'User';
-    $('displayRole').textContent = profile.role || '—';
-    $('displayLocation').textContent = profile.location || '—';
-    if (profile.avatar_url) {
-      $('avatarPreview').textContent = '';
-      const img = document.createElement('img'); img.src = profile.avatar_url; img.alt = 'avatar'; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; img.style.borderRadius='12px';
-      $('avatarPreview').appendChild(img);
-    } else {
-      $('avatarPreview').textContent = (profile.firstName || 'U').charAt(0).toUpperCase();
-    }
-    // form fields
-    $('firstName').value = profile.firstName || '';
-    $('lastName').value = profile.lastName || '';
-    $('location').value = profile.location || '';
-    $('bio').value = profile.bio || '';
-    $('role').value = profile.role || 'client';
-    $('skills').value = Array.isArray(profile.skills) ? profile.skills.join(', ') : '';
+// helpers
+function safeText(v, fallback='') { return v ? String(v) : fallback; }
 
-    // portfolio
-    renderPortfolio(profile.portfolio || []);
-    // KPIs and counts (basic)
-    $('kpiPosts').textContent = (profile.posts || '—');
-    $('kpiApprovals').textContent = (profile.approvals || '—');
-    $('kpiReach').textContent = (profile.reach || '—');
-    $('countPosts').textContent = profile.posts || '—';
-    $('countApprovals').textContent = profile.approvals || '—';
-    $('countConnections').textContent = profile.connections || '—';
-  } catch (err) {
-    console.warn('Could not load profile', err);
-  }
-}
+// DOM refs
+const skillText = $('skillText');
+const skillsInput = $('skillsInput');
+const portfolioUrl = $('portfolioUrl');
+const addPortfolioBtn = $('addPortfolio');
+const portfolioList = $('portfolioList');
+const portfolioPreview = $('portfolioPreview');
 
-function renderPortfolio(items) {
-  const list = $('portfolioList');
-  list.innerHTML = '';
-  if (!items || items.length === 0) {
-    list.innerHTML = '<div class="muted">No portfolio items yet.</div>';
-    return;
-  }
-  items.forEach(it => {
-    const wrap = document.createElement('div'); wrap.className = 'portfolio-item';
-    const media = document.createElement('div');
-    if (it.media && it.media.endsWith('.mp4')) {
-      const v = document.createElement('video'); v.src = it.media; v.controls=true; v.width=160; media.appendChild(v);
-    } else if (it.media) {
-      const img = document.createElement('img'); img.src = it.media; img.alt = it.title || 'media'; media.appendChild(img);
-    } else {
-      const box = document.createElement('div'); box.style.width='100px'; box.style.height='72px'; box.style.background='linear-gradient(90deg,#111,#222)'; box.style.borderRadius='8px'; media.appendChild(box);
-    }
-    const meta = document.createElement('div'); meta.className='meta';
-    const h4 = document.createElement('h4'); h4.textContent = it.title || 'Untitled';
-    const p = document.createElement('p'); p.textContent = it.description || ''; p.className='muted';
-    meta.appendChild(h4); meta.appendChild(p);
-    wrap.appendChild(media); wrap.appendChild(meta);
-    list.appendChild(wrap);
+const fileInput = $('fileInput');
+const dropzone = $('dropzone');
+const dzPreview = $('dzPreview');
+const chooseFiles = $('chooseFiles');
+
+const companiesInput = $('companyUrl');
+const addCompanyBtn = $('addCompany');
+const companiesAdded = $('companiesAdded');
+
+const photosGallery = $('photosGallery');
+const mediaModal = $('mediaModal');
+const mediaViewer = $('mediaViewer');
+const closeModal = $('closeModal');
+
+const toggleDiscover = $('toggleDiscover');
+const discoverState = $('discoverState');
+
+const avatarUrl = $('avatarUrl');
+const pAvatar = $('pAvatar');
+const pName = $('pName');
+const pRole = $('pRole');
+const pLocation = $('pLocation');
+
+const saveBtn = $('saveProfile');
+const profileForm = $('profileForm');
+const profileMsg = $('profileMsg');
+
+// Render helpers
+function renderSkills() {
+  // clear existing tags (except input)
+  Array.from(skillsInput.querySelectorAll('.tag')).forEach(n=>n.remove());
+  state.skills.forEach((s,i) => {
+    const tag = create('span','tag'); tag.textContent = s;
+    const btn = create('button'); btn.type='button'; btn.textContent='✕'; btn.addEventListener('click', () => { state.skills.splice(i,1); renderSkills(); });
+    tag.appendChild(btn); skillsInput.insertBefore(tag, skillText);
   });
 }
 
-// Save profile edits
-$('saveProfile').addEventListener('click', async () => {
-  const payload = {
-    firstName: $('firstName').value.trim(),
-    lastName: $('lastName').value.trim(),
-    location: $('location').value.trim(),
-    bio: $('bio').value.trim(),
-    skills: $('skills').value.split(',').map(s=>s.trim()).filter(Boolean)
-  };
+function renderPortfolioList() {
+  portfolioList.innerHTML='';
+  portfolioPreview.innerHTML='';
+  if (!state.portfolio.length) { portfolioPreview.textContent='No links yet'; return; }
+  state.portfolio.forEach((u,i) => {
+    const it = create('div','portfolio-item');
+    const media = create('div'); media.style.flex='0 0 96px';
+    const img = create('img'); img.src = (/\.(jpg|jpeg|png|gif|webp)$/i.test(u) ? u : ''); img.alt = u;
+    if (img.src) media.appendChild(img);
+    else media.textContent='🔗';
+    it.appendChild(media);
+    const info = create('div'); info.style.flex='1';
+    const a = create('a'); a.href = u; a.textContent = u; a.target='_blank';
+    info.appendChild(a);
+    it.appendChild(info);
+    const rm = create('button','btn ghost'); rm.type='button'; rm.textContent='Remove'; rm.addEventListener('click', ()=>{ state.portfolio.splice(i,1); renderPortfolioList(); });
+    it.appendChild(rm);
+    portfolioList.appendChild(it);
+
+    // preview small
+    const pv = create('div','portfolio-item'); const mini = img.cloneNode(true);
+    if (mini.src) pv.appendChild(mini); else pv.textContent = u;
+    portfolioPreview.appendChild(pv);
+  });
+}
+
+function renderCompanies() {
+  companiesAdded.innerHTML='';
+  if (!state.companies.length) { companiesAdded.textContent = 'No websites yet'; return; }
+  state.companies.forEach((u,i) => {
+    const el = create('div','company');
+    const a = create('a'); a.href = u; a.textContent = u; a.target='_blank';
+    const rm = create('button','btn ghost'); rm.type='button'; rm.textContent='Remove'; rm.addEventListener('click', ()=>{ state.companies.splice(i,1); renderCompanies(); });
+    el.appendChild(a); el.appendChild(rm);
+    companiesAdded.appendChild(el);
+  });
+}
+
+function renderPhotosGallery() {
+  photosGallery.innerHTML='';
+  if (!state.photos.length) { photosGallery.textContent = 'No photos yet'; return; }
+  state.photos.forEach((url, i) => {
+    const item = create('div','gallery-item');
+    let media;
+    if (/\.(jpe?g|png|gif|webp)$/i.test(url)) { media = create('img'); media.src = url; }
+    else if (/\.mp4|\.webm|youtube|vimeo/i.test(url)) { media = create('video'); media.src = url; media.controls = false; }
+    else { media = create('img'); }
+    item.appendChild(media);
+    item.addEventListener('click', ()=> openMediaModal(url));
+    const rm = create('button','dz-remove'); rm.textContent='✕'; rm.addEventListener('click', (e)=>{ e.stopPropagation(); state.photos.splice(i,1); renderPhotosGallery(); });
+    rm.style.position='absolute'; rm.style.right='8px'; rm.style.top='8px'; rm.style.background='rgba(0,0,0,0.4)'; rm.style.color='white'; rm.style.border='0'; rm.style.padding='4px 8px'; rm.style.borderRadius='6px';
+    item.appendChild(rm);
+    photosGallery.appendChild(item);
+  });
+}
+
+function openMediaModal(url) {
+  mediaViewer.innerHTML='';
+  if (/\.mp4|\.webm|youtube|vimeo/i.test(url)) {
+    const v = create('video'); v.src=url; v.controls = true; v.className='media'; mediaViewer.appendChild(v);
+  } else {
+    const img = create('img'); img.src=url; img.className='media'; mediaViewer.appendChild(img);
+  }
+  mediaModal.classList.remove('hidden'); mediaModal.style.display='flex'; mediaModal.setAttribute('aria-hidden','false');
+}
+
+closeModal.addEventListener('click', ()=> { mediaModal.classList.add('hidden'); mediaModal.style.display='none'; mediaViewer.innerHTML=''; mediaModal.setAttribute('aria-hidden','true'); });
+
+// skills input
+skillText.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const v = skillText.value.trim(); if (v && !state.skills.includes(v)) state.skills.push(v); skillText.value=''; renderSkills();
+  }
+});
+
+// portfolio add
+addPortfolioBtn.addEventListener('click', ()=> {
+  const v = portfolioUrl.value.trim(); if (!v) return; state.portfolio.push(v); portfolioUrl.value=''; renderPortfolioList();
+});
+
+// company add
+addCompanyBtn.addEventListener('click', ()=> {
+  const v = companiesInput.value.trim();
+  if (!v) return;
+  // quick URL normalization
+  const url = v.startsWith('http') ? v : `https://${v}`;
+  state.companies.push(url);
+  companiesInput.value=''; renderCompanies();
+});
+
+// dropzone handlers
+chooseFiles.addEventListener('click', ()=> fileInput.click());
+dropzone.addEventListener('dragover', (e)=> { e.preventDefault(); dropzone.classList.add('dz-hover'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('dz-hover'));
+dropzone.addEventListener('drop', async (e)=> {
+  e.preventDefault(); dropzone.classList.remove('dz-hover');
+  const files = Array.from(e.dataTransfer.files || []);
+  await uploadFiles(files);
+});
+
+fileInput.addEventListener('change', async (e)=> {
+  const files = Array.from(e.target.files || []);
+  await uploadFiles(files);
+});
+
+// upload helper -> POST /api/upload multiple files
+async function uploadFiles(files) {
+  if (!files.length) return;
+  // show small previews and upload progress
+  files.forEach(f => {
+    const thumb = create('div'); thumb.className='dz-thumb';
+    const img = create('img'); img.src = URL.createObjectURL(f); img.style.width='100%'; img.style.height='100%'; thumb.appendChild(img);
+    const rm = create('button'); rm.className='dz-remove'; rm.textContent='✕'; thumb.appendChild(rm);
+    dzPreview.appendChild(thumb);
+  });
+
+  for (const f of files) {
+    try {
+      const form = new FormData(); form.append('file', f);
+      const res = await fetch(`${window.API_BASE || ''}/api/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` },
+        body: form
+      });
+      if (!res.ok) { console.warn('upload failed', await res.text()); continue; }
+      const json = await res.json();
+      if (json.url) {
+        state.photos.push(json.url);
+        renderPhotosGallery();
+      }
+    } catch (err) {
+      console.error('upload error', err);
+    }
+  }
+  dzPreview.innerHTML='';
+}
+
+// toggle discover
+toggleDiscover.addEventListener('click', ()=> {
+  state.discoverable = !state.discoverable;
+  discoverState.textContent = state.discoverable ? 'Public' : 'Hidden';
+  toggleDiscover.textContent = state.discoverable ? 'Make private' : 'Make public';
+});
+
+// save profile
+profileForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  profileMsg.textContent = 'Saving…';
+  saveBtn.disabled = true;
   try {
-    const res = await API.request('/profile', { method: 'PUT', body: JSON.stringify(payload), headers: {'Content-Type':'application/json'} });
+    const payload = {
+      firstName: $('firstName').value.trim(),
+      lastName: $('lastName').value.trim(),
+      role: $('role').value,
+      location: $('location').value.trim(),
+      bio: $('bio').value.trim(),
+      rate: $('rate').value ? Number($('rate').value) : null,
+      availability: $('availability').value.trim(),
+      skills: state.skills,
+      portfolio: state.portfolio,
+      photos: state.photos,
+      companies: state.companies,
+      avatarUrl: $('avatarUrl').value.trim(),
+      discoverable: state.discoverable
+    };
+    const res = await API.request('/me', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!res.ok) {
-      const t = await res.text().catch(()=>null);
-      alert('Could not save profile: ' + (t || res.status));
+      const txt = await res.text().catch(()=> 'save error');
+      profileMsg.textContent = `Save failed: ${txt}`;
+      saveBtn.disabled = false;
       return;
     }
     const updated = await res.json();
-    // refresh UI
-    loadMyProfile();
-    alert('Profile saved');
+    populate(updated);
+    profileMsg.textContent = 'Profile saved.';
   } catch (err) {
-    console.error('save profile', err);
-    alert('Network error saving profile');
+    console.error('save err', err);
+    profileMsg.textContent = 'Network error while saving.';
+  } finally {
+    saveBtn.disabled = false;
+    setTimeout(()=> profileMsg.textContent = '', 3000);
   }
 });
 
-$('cancelEdit').addEventListener('click', () => { loadMyProfile(); });
+// cancel => reload profile
+$('cancelProfile').addEventListener('click', (e)=> { e.preventDefault(); loadProfile(); });
 
-// Avatar upload
-$('uploadAvatarBtn').addEventListener('click', () => $('avatarFile').click());
-$('avatarFile').addEventListener('change', async (ev) => {
-  const f = ev.target.files[0];
-  if (!f) return;
-  const fd = new FormData(); fd.append('file', f);
+// populate form with profile data
+function populate(profile) {
+  if (!profile) return;
+  state.userId = profile.id;
+  $('firstName').value = profile.firstName || '';
+  $('lastName').value = profile.lastName || '';
+  $('role').value = profile.role || '';
+  $('location').value = profile.location || '';
+  $('bio').value = profile.bio || '';
+  $('rate').value = profile.rate || '';
+  $('availability').value = profile.availability || '';
+  state.skills = Array.isArray(profile.skills) ? profile.skills : (profile.skills ? JSON.parse(profile.skills) : []);
+  state.portfolio = Array.isArray(profile.portfolio) ? profile.portfolio : (profile.portfolio ? JSON.parse(profile.portfolio) : []);
+  state.photos = Array.isArray(profile.photos) ? profile.photos : (profile.photos ? JSON.parse(profile.photos) : []);
+  state.companies = Array.isArray(profile.companies) ? profile.companies : (profile.companies ? JSON.parse(profile.companies) : []);
+  state.discoverable = profile.discoverable === undefined ? true : !!profile.discoverable;
+
+  $('avatarUrl').value = profile.avatarUrl || '';
+  pName.textContent = `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'User';
+  pRole.textContent = profile.role || '—';
+  pLocation.textContent = profile.location || '—';
+  if (profile.avatarUrl) { pAvatar.style.backgroundImage = `url(${profile.avatarUrl})`; pAvatar.textContent=''; } else { pAvatar.style.backgroundImage=''; pAvatar.textContent = (profile.firstName || 'U').charAt(0).toUpperCase(); }
+
+  renderSkills(); renderPortfolioList(); renderCompanies(); renderPhotosGallery();
+  discoverState.textContent = state.discoverable ? 'Public' : 'Hidden';
+  toggleDiscover.textContent = state.discoverable ? 'Make private' : 'Make public';
+}
+
+// load /me
+async function loadProfile() {
   try {
-    const res = await API.request('/profile/avatar', { method: 'POST', body: fd, skipJson: true });
-    if (!res.ok) throw new Error('avatar fail');
-    const json = await res.json();
-    // refresh
-    loadMyProfile();
-    alert('Avatar uploaded');
+    const res = await API.request('/me', { method: 'GET' });
+    if (!res.ok) throw new Error('not ok');
+    const data = await res.json();
+    populate(data);
   } catch (err) {
-    console.error('avatar upload', err);
-    alert('Could not upload avatar');
+    console.warn('load profile', err);
+    profileMsg.textContent = 'Could not load profile — check backend.';
   }
-});
+}
 
-// Portfolio add
-$('addPortfolio').addEventListener('click', async () => {
-  const title = $('pfTitle').value.trim();
-  const desc = $('pfDesc').value.trim();
-  const file = $('pfFile').files[0];
-  if (!title) { alert('Please add a title'); return; }
-  const fd = new FormData();
-  fd.append('title', title);
-  fd.append('description', desc);
-  if (file) fd.append('file', file);
-  try {
-    const res = await API.request('/profile/portfolio', { method: 'POST', body: fd, skipJson: true });
-    if (!res.ok) {
-      const t = await res.text().catch(()=>null);
-      alert('Portfolio add failed: ' + (t || res.status));
-      return;
-    }
-    const json = await res.json();
-    // append item to list
-    // re-fetch profile to get canonical portfolio
-    await loadMyProfile();
-    $('pfTitle').value = ''; $('pfDesc').value = ''; $('pfFile').value = '';
-    alert('Portfolio item added');
-  } catch (err) {
-    console.error('portfolio add', err);
-    alert('Could not add portfolio item');
-  }
-});
-
-// logout
-$('logout').addEventListener('click', ()=> auth.logout());
-
-// guard + init
+// initial guard
 (async function init(){
   if (!auth.getToken()) { location.href = './login.html'; return; }
-  try {
-    await loadMyProfile();
-  } catch(e){ console.warn('init profile', e); }
+  await loadProfile();
 })();
