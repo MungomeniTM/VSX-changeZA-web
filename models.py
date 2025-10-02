@@ -1,5 +1,5 @@
-# app/models.py (only showing users table)
-from sqlalchemy import Table, Column, Integer, String, DateTime, MetaData, Boolean, Text, Float
+# backend/app/models.py
+from sqlalchemy import Table, Column, Integer, String, Text, DateTime, MetaData, ForeignKey, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy import create_engine
 from app.core.config import DATABASE_URL
@@ -16,15 +16,29 @@ users = Table(
     Column("password_hash", String(256), nullable=False),
     Column("role", String(50), nullable=True),
     Column("location", String(200), nullable=True),
-    Column("bio", Text, nullable=True),
-    Column("skills", Text, nullable=True),
-    Column("portfolio", Text, nullable=True),
-    Column("photos", Text, nullable=True),      # new: JSON text array of photo URLs
-    Column("companies", Text, nullable=True),   # new: JSON text array of company URLs
-    Column("avatar_url", String(1024), nullable=True),
-    Column("rate", Float, nullable=True),
-    Column("availability", String(256), nullable=True),
-    Column("discoverable", Boolean, server_default="1"),
+    # ... other columns (bio, skills, photos...) --
+)
+
+posts = Table(
+    "posts",
+    metadata,
+    Column("id", Integer, primary_key=True, index=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE")),
+    Column("text", Text, nullable=True),
+    Column("media_url", String(1024), nullable=True),
+    Column("media_type", String(32), nullable=True),
+    Column("approvals", Integer, default=0),
+    Column("shares", Integer, default=0),
+    Column("created_at", DateTime, server_default=func.now()),
+)
+
+comments = Table(
+    "comments",
+    metadata,
+    Column("id", Integer, primary_key=True, index=True),
+    Column("post_id", Integer, ForeignKey("posts.id", ondelete="CASCADE")),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE")),
+    Column("text", Text, nullable=False),
     Column("created_at", DateTime, server_default=func.now()),
 )
 
