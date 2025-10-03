@@ -17,3 +17,17 @@ class UserResponse(UserBase):
 
     class Config:
         orm_mode = True
+        
+from pydantic import BaseModel
+
+class UserBase(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str
+    role: str | None = None
+    location: str | None = None
+
+class UserOut(UserBase):
+    id: int
+    class Config:
+        orm_mode = True
