@@ -1,55 +1,33 @@
+    # app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles  # ✅ must be imported at the top
+from app.database import Base, engine
+from app.routes import posts  # add this
+from app.models import post    # ensures table creation
+import os
 
-from app.routes import auth, uploads  # ✅ add users.py later once stable
-from app.core.config import Base, engine, API_PREFIX, UPLOAD_DIR
-
-# ---------------------------
-# Create DB tables
-# ---------------------------
 Base.metadata.create_all(bind=engine)
 
-# ---------------------------
-# FastAPI app
-# ---------------------------
-app = FastAPI(
-    title="VSXchangeZA API 🚀",
-    description="Backend API for VSXchangeZA — Cosmic-level authentication",
-    version="1.0.0"
-)
+app = FastAPI(title="VSXchangeZA API")
 
-# ---------------------------
-# CORS setup for frontend
-# ---------------------------
-origins = [
-    "http://127.0.0.1:5500",  # VSCode Live Server
-    "http://localhost:5500"
-]
-
+# Allow your frontend to access the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------------------
-# Include routes
-# ---------------------------
-app.include_router(auth.router, prefix=API_PREFIX)
-app.include_router(uploads.router, prefix=API_PREFIX)
-# app.include_router(users.router, prefix=API_PREFIX)  # add when users route is ready
+# Include routers
+app.include_router(posts.router)
 
-# ---------------------------
-# Serve static uploads (profile photos, portfolios, etc.)
-# ---------------------------
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-
-# ---------------------------
-# Root endpoint
-# ---------------------------
 @app.get("/")
 def root():
-    return {"message": "VSXchangeZA API is running smoothly 🚀"}
+    return {"message": "VSXchangeZA backend running"}
+
+# Serve uploaded files
+from fastapi.staticfiles import StaticFiles
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
