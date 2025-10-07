@@ -1,26 +1,45 @@
 // frontend/public/api.js
-(function(){
-  const API_BASE = window.API_BASE || ""; // when frontend served from file server, leave blank
-  const PREFIX = "/api";
+(function () {
+  // Change if your backend is on a different origin/port
+  const API_BASE = window.API_BASE || "http://localhost:8000";
 
   async function request(path, opts = {}) {
-    const urlPath = path.startsWith("/") ? path : "/" + path;
-    const full = `${API_BASE}${PREFIX}${urlPath}`;
-    const headers = new Headers(opts.headers || {});
-    if (!(opts.body instanceof FormData) && !headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json");
-    }
+    // normalized path (ensure starts with /)
+    const p = path.startsWith("/") ? path : `/${path}`;
+    const url = `${API_BASE}${p}`;
+
+    opts = Object.assign({}, opts);
+    opts.headers = new Headers(opts.headers || {});
+
+    // Add Authorization if token exists
     const token = localStorage.getItem("token");
-    if (token) headers.set("Authorization", `Bearer ${token}`);
-    const res = await fetch(full, { method: opts.method || "GET", headers, body: opts.body });
-    return res;
+    if (token) opts.headers.set("Authorization", `Bearer ${token}`);
+
+    // fetch
+    try {
+      const res = await fetch(url, {
+        method: opts.method || "GET",
+        headers: opts.headers,
+        body: opts.body,
+        credentials: opts.credentials || "same-origin",
+      });
+      return res;
+    } catch (err) {
+      console.error("API.request network error", url, err);
+      throw err;
+    }
   }
 
   async function json(path, opts = {}) {
     const res = await request(path, opts);
-    if (!res.ok) throw new Error(`API ${res.status}`);
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `${res.status}`);
+      const e = new Error(`API ${res.status}: ${txt}`);
+      e.response = res;
+      throw e;
+    }
     return res.json();
   }
 
-  window.API = { request, json, API_BASE, PREFIX };
+  window.API = { request, json, API_BASE };
 })();
