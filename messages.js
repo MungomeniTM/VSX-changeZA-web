@@ -1,5 +1,3 @@
-const API_BASE = "http://127.0.0.1:8000/api";
-
 document.addEventListener("DOMContentLoaded", () => {
   const chatList = document.getElementById("chatList");
   const chatMessages = document.getElementById("chatMessages");
@@ -9,18 +7,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentChatUser = null;
 
-  // Fetch user list (fake for now)
+  // Temporary sample users
   const users = [
     { id: 1, name: "Alien Engineer 👽" },
-    { id: 2, name: "Cyber Coder 🧬" },
-    { id: 3, name: "VSX Builder ⚡" }
+    { id: 2, name: "Cosmic Builder ⚡" },
+    { id: 3, name: "Quantum Collaborator 🧬" },
   ];
 
-  users.forEach(u => {
+  users.forEach(user => {
     const div = document.createElement("div");
     div.className = "chat-user";
-    div.textContent = u.name;
-    div.onclick = () => openChat(u);
+    div.textContent = user.name;
+    div.onclick = () => openChat(user);
     chatList.appendChild(div);
   });
 
@@ -41,5 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     messageInput.value = "";
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Simulate reply
+    setTimeout(() => {
+      const reply = document.createElement("div");
+      reply.className = "message received";
+      reply.textContent = `Received: "${text}"`;
+      chatMessages.appendChild(reply);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 700);
   };
 });
