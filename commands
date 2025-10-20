@@ -1,0 +1,35 @@
+curl -X POST http://127.0.0.1:5000/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "Password123!"
+}'
+
+curl -X POST http://127.0.0.1:5000/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "testuser@example.com",
+  "password": "Password123!"
+}'
+
+
+TOKEN=<PASTE_YOUR_ACCESS_TOKEN_HERE>
+
+curl -X GET http://127.0.0.1:5000/me \
+-H "Authorization: Bearer $TOKEN"
+
+curl -X POST http://127.0.0.1:5000/posts \
+-H "Authorization: Bearer $TOKEN" \
+-H "Content-Type: application/json" \
+-d '{
+  "text": "Hello VSXchangeZA! This is a test post via JSON."
+}'
+
+curl -X POST http://127.0.0.1:5000/posts \
+-H "Authorization: Bearer $TOKEN" \
+-F "text=Post with image via curl" \
+-F "media=@/full/path/to/your/image.jpg"
+
+curl -X GET "http://127.0.0.1:5000/posts?page=1&limit=10"
+
