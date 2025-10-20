@@ -1,35 +1,56 @@
-curl -X POST http://127.0.0.1:5000/auth/register \
--H "Content-Type: application/json" \
--d '{
-  "username": "testuser",
-  "email": "testuser@example.com",
-  "password": "Password123!"
-}'
+#!/bin/bash
 
-curl -X POST http://127.0.0.1:5000/auth/login \
--H "Content-Type: application/json" \
--d '{
-  "email": "testuser@example.com",
-  "password": "Password123!"
-}'
+# -----------------------------
+# VSXchangeZA Backend Test Script
+# -----------------------------
 
+API_BASE="http://127.0.0.1:5000"
+IMAGE_PATH="/full/path/to/your/image.jpg"  # <-- replace this
 
-TOKEN=<PASTE_YOUR_ACCESS_TOKEN_HERE>
+# Generate a random username/email to avoid collisions
+RAND=$((RANDOM % 10000))
+USERNAME="testuser$RAND"
+EMAIL="testuser$RAND@example.com"
+PASSWORD="Password123!"
 
-curl -X GET http://127.0.0.1:5000/me \
--H "Authorization: Bearer $TOKEN"
+echo "=== 1️⃣ Registering user: $USERNAME ==="
+REGISTER_RESPONSE=$(curl -s -X POST "$API_BASE/auth/register" \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"$USERNAME\", \"email\":\"$EMAIL\", \"password\":\"$PASSWORD\"}")
+echo "$REGISTER_RESPONSE"
 
-curl -X POST http://127.0.0.1:5000/posts \
+# Extract token
+TOKEN=$(echo $REGISTER_RESPONSE | grep -oP '(?<="access_token":")[^"]+')
+if [ -z "$TOKEN" ]; then
+  echo "Failed to get token. Exiting."
+  exit 1
+fi
+echo "✅ Access token acquired."
+
+echo "=== 2️⃣ Getting profile (/me) ==="
+curl -s -X GET "$API_BASE/me" -H "Authorization: Bearer $TOKEN" | jq
+echo
+
+echo "=== 3️⃣ Creating a post (JSON) ==="
+curl -s -X POST "$API_BASE/posts" \
 -H "Authorization: Bearer $TOKEN" \
 -H "Content-Type: application/json" \
--d '{
-  "text": "Hello VSXchangeZA! This is a test post via JSON."
-}'
+-d '{"text":"Hello VSXchangeZA! This is a test post via JSON."}' | jq
+echo
 
-curl -X POST http://127.0.0.1:5000/posts \
--H "Authorization: Bearer $TOKEN" \
--F "text=Post with image via curl" \
--F "media=@/full/path/to/your/image.jpg"
+if [ -f "$IMAGE_PATH" ]; then
+  echo "=== 4️⃣ Creating a post with file ==="
+  curl -s -X POST "$API_BASE/posts" \
+    -H "Authorization: Bearer $TOKEN" \
+    -F "text=Post with image via curl" \
+    -F "media=@$IMAGE_PATH" | jq
+  echo
+else
+  echo "⚠️ Image file not found at $IMAGE_PATH. Skipping file upload test."
+fi
 
-curl -X GET "http://127.0.0.1:5000/posts?page=1&limit=10"
+echo "=== 5️⃣ Listing posts ==="
+curl -s -X GET "$API_BASE/posts?page=1&limit=10" | jq
+echo
 
+echo "✅ Test script completed."
