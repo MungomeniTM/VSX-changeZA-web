@@ -1,0 +1,47 @@
+# -----------------------------
+# VSXchangeZA Backend Test Script (PowerShell)
+# -----------------------------
+
+$API_BASE = "http://127.0.0.1:5000"
+$IMAGE_PATH = "C:\full\path\to\your\image.jpg"  # <-- replace this
+
+# Generate random username/email
+$rand = Get-Random -Maximum 10000
+$USERNAME = "testuser$rand"
+$EMAIL = "testuser$rand@example.com"
+$PASSWORD = "Password123!"
+
+Write-Host "=== 1️⃣ Registering user: $USERNAME ==="
+$registerResponse = Invoke-RestMethod -Uri "$API_BASE/auth/register" -Method Post -ContentType "application/json" -Body (@{
+    username = $USERNAME
+    email = $EMAIL
+    password = $PASSWORD
+} | ConvertTo-Json)
+
+$TOKEN = $registerResponse.access_token
+if (-not $TOKEN) {
+    Write-Host "❌ Failed to get token. Exiting."
+    exit
+}
+Write-Host "✅ Access token acquired."
+
+Write-Host "=== 2️⃣ Getting profile (/me) ==="
+Invoke-RestMethod -Uri "$API_BASE/me" -Method Get -Headers @{ Authorization = "Bearer $TOKEN" } | ConvertTo-Json -Depth 5
+
+Write-Host "`n=== 3️⃣ Creating a post (JSON) ==="
+Invoke-RestMethod -Uri "$API_BASE/posts" -Method Post -Headers @{ Authorization = "Bearer $TOKEN" } -ContentType "application/json" -Body (@{
+    text = "Hello VSXchangeZA! This is a test post via PowerShell."
+} | ConvertTo-Json) | ConvertTo-Json -Depth 5
+
+if (Test-Path $IMAGE_PATH) {
+    Write-Host "`n=== 4️⃣ Creating a post with file ==="
+    $form = @{ text = "Post with image via PowerShell"; media = Get-Item $IMAGE_PATH }
+    Invoke-RestMethod -Uri "$API_BASE/posts" -Method Post -Headers @{ Authorization = "Bearer $TOKEN" } -Form $form | ConvertTo-Json -Depth 5
+} else {
+    Write-Host "⚠️ Image file not found at $IMAGE_PATH. Skipping file upload test."
+}
+
+Write-Host "`n=== 5️⃣ Listing posts ==="
+Invoke-RestMethod -Uri "$API_BASE/posts?page=1&limit=10" -Method Get | ConvertTo-Json -Depth 5
+
+Write-Host "`n✅ Test script completed."
